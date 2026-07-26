@@ -304,7 +304,7 @@ CREATE TABLE products (
     weight_g INTEGER, -- 商品重量 (g)
     available_date DATE NOT NULL DEFAULT current_date,
     discontinued_date DATE NOT NULL DEFAULT '2555-01-01',
-    note TEXT,
+    note TEXT NOT NULL DEFAULT '',
     -- 後で（同時ではない）画像などを関連付ける際に使用するユニークキーとして
     ulid_str VARCHAR(26) UNIQUE NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),

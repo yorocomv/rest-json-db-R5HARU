@@ -81,7 +81,7 @@ export const productSkusSchema = z.object({
         label: z.string().min(1).max(32),
       })
     )
-    .optional(),
+    .nullable(),
   skus_name: z.string().trim().min(1).max(32),
   product_id: z.coerce.number().int().positive(),
   case_quantity: z.preprocess((v) => (v === '' ? undefined : v), z.coerce.number().int().positive().optional()),

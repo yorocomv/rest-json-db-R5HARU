@@ -146,7 +146,7 @@ export const formatProductData = (
     weight_g: body.weight_g ?? null,
     available_date: body.available_date,
     discontinued_date: body.discontinued_date,
-    note: body.note ?? null,
+    note: body.note ?? undefined,
     ulid_str: mode === 'new' ? ulid() : undefined,
   });
   return productInput;

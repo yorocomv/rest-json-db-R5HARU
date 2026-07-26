@@ -41,7 +41,7 @@ export const productsTbRowSchema = commonProductsSchema
     diameter_mm: z.number().int().positive().nullable(),
     height_mm: z.number().int().positive().nullable(),
     weight_g: z.number().int().positive().nullable(),
-    note: z.string().nullable(),
+    note: z.string(),
     ulid_str: z.string().ulid(),
   });
 
@@ -100,7 +100,7 @@ export const viewSingleProductsRowSchema = z.object({
   diameter_mm: z.number().int().positive().nullable(),
   height_mm: z.number().int().positive().nullable(),
   weight_g: z.number().int().positive().nullable(),
-  product_note: z.string().nullable(),
+  product_note: z.string(),
   ulid_str: z.string().ulid(),
   // Basic Product
   basic_product_name: z.string().min(1).max(32),
@@ -161,6 +161,7 @@ export const viewSkuDetailsRowSchema = z.object({
   max_piece_weight_unit_type_id: z.number().int().positive(),
   available_date: z.date(),
   discontinued_date: z.date(),
+  product_note: z.string(),
   ulid_str: z.string().ulid(),
 
   // 元テーブルで NULL 許容
@@ -169,7 +170,6 @@ export const viewSkuDetailsRowSchema = z.object({
   diameter_mm: z.number().int().positive().nullable(),
   height_mm: z.number().int().positive().nullable(),
   weight_g: z.number().int().positive().nullable(),
-  product_note: z.string().nullable(),
 
   // --- Basic Product (basic_products) ---
   // 元テーブルで NOT NULL
