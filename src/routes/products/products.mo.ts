@@ -588,7 +588,7 @@ export const findAllSingleProducts = async (): Promise<ViewSingleProductsRow[]> 
 
 export const findAllProductSkuDetails = async (): Promise<ViewSkuDetailsRow[]> => {
   const rows = await db
-    .manyOrNone('SELECT * FROM v_sku_details ORDER BY sku_id')
+    .manyOrNone('SELECT * FROM v_sku_details ORDER BY internal_code ASC, basic_product_id ASC')
     .catch((err: string) => Promise.reject(new DataBaseError(err)));
   const result = z.array(viewSkuDetailsRowSchema).safeParse(rows);
 
