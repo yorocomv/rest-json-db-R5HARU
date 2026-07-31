@@ -286,7 +286,6 @@ export async function upsertOne<T>({
 > {
   const { text, values } =
     updateId !== null ? update(table, input).where('id', updateId).toParams() : insert(table, input).toParams();
-  console.log(text);
 
   const keyRegex = /^Key \((.*?)\)=\((.*?)\) already exists\.$/;
   const pgErrorSchema = z.object({
