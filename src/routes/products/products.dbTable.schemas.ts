@@ -131,6 +131,7 @@ export const viewSkuDetailsRowSchema = z.object({
   sku_name: z.string().min(1).max(32),
   sku_ulid_str: z.string().ulid(),
   priority: z.enum(['A', 'B', 'C']),
+  updated_at: z.string().datetime(),
 
   // 元テーブルで NULL 許容
   case_quantity: z.number().int().positive().nullable(),
