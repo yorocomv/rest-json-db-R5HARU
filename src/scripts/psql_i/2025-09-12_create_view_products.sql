@@ -34,6 +34,7 @@ SELECT
     ps.inner_carton_width_mm,
     ps.inner_carton_height_mm,
     ps.inner_carton_weight_g,
+    ps.updated_at,
     -- Product
     p.id AS product_id,
     p.name AS product_name,
