@@ -34,14 +34,14 @@ export const productsSchema = z.object({
   height_mm: z.preprocess((v) => (v === '' ? undefined : v), z.coerce.number().int().positive().optional()),
   weight_g: z.preprocess((v) => (v === '' ? undefined : v), z.coerce.number().int().positive().optional()),
   available_date: z.preprocess(
-    (v) => (v === '' ? undefined : v),
+    (v) => (v === '' || v === null ? undefined : v),
     z.coerce
       .date()
       .transform((val) => val.toLocaleString('sv-SE', { timeZone: 'Asia/Tokyo', dateStyle: 'short' }))
       .optional()
   ),
   discontinued_date: z.preprocess(
-    (v) => (v === '' ? undefined : v),
+    (v) => (v === '' || v === null ? undefined : v),
     z.coerce
       .date()
       .transform((val) => val.toLocaleString('sv-SE', { timeZone: 'Asia/Tokyo', dateStyle: 'short' }))
