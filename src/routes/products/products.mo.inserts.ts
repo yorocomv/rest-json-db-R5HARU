@@ -1,5 +1,5 @@
 import { insert } from 'sql-bricks';
-import { DataBaseError, db } from '@/db';
+import { DataBaseError, db, pgp } from '@/db';
 import jaconv from 'jaconv';
 import UnexpectedError from '@/classes/unexpected-error';
 import {
@@ -19,6 +19,7 @@ import {
   resolveSetProductSpecs,
   upsertOne,
 } from './products.mo';
+import { ProductsOrder } from './products.order.types';
 
 // 完全新規登録（通常商品）
 export const registerOneRegularProduct = async (
@@ -467,3 +468,82 @@ export const registerOneQuantityVariantProduct = async (
       },
     };
   });
+
+// 商品発注ＦＡＸの履歴を残す
+
+const currentDate = {
+  toPostgres: () => 'CURRENT_DATE',
+  rawType: true,
+};
+
+const orderHistoryColumnSet = new pgp.helpers.ColumnSet(
+  [
+    {
+      name: 'order_date',
+      init: () => currentDate,
+    },
+    'sku_id',
+    'sku_name',
+    'case_quantity',
+    'inner_carton_quantity',
+    'display_category_name',
+    'internal_code',
+    'jan_code',
+    'order_quantity',
+    'order_unit',
+    'delivery_date',
+    'delivery_time_slot',
+    {
+      name: 'components',
+      init: (col) => JSON.stringify(col.value),
+    },
+    {
+      name: 'combinations',
+      init: (col) => JSON.stringify(col.value),
+    },
+    {
+      name: 'remark',
+      init: (col) => (col.value as string) ?? null,
+    },
+  ],
+  { table: 'product_orders_print_history' }
+);
+
+interface InsertedOrderResult {
+  registeredAt: string;
+  firstSkuName: string | null;
+  insertedCount: number;
+}
+
+export const registerOneProductsOrder = async (body: ProductsOrder): Promise<InsertedOrderResult> => {
+  const result = await db.tx('record-order-history', async (t) => {
+    await t
+      .proc('create_year_range_partition_by_date', ['product_orders_print_history', currentDate])
+      .catch((err: string) => Promise.reject(new DataBaseError(err)));
+
+    if (body.products.length === 0) {
+      return {
+        registeredAt: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Tokyo' }),
+        firstSkuName: null,
+        insertedCount: 0,
+      };
+    }
+
+    const insertQuery = `${pgp.helpers.insert(
+      body.products,
+      orderHistoryColumnSet
+    )} RETURNING registered_at::text, sku_name`;
+
+    const insertedRows = await t.many<{
+      registered_at: string;
+      sku_name: string;
+    }>(insertQuery);
+
+    return {
+      registeredAt: insertedRows[0].registered_at,
+      firstSkuName: insertedRows[0].sku_name,
+      insertedCount: insertedRows.length,
+    };
+  });
+  return result;
+};

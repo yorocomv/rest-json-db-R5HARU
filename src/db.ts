@@ -12,7 +12,7 @@ export class DataBaseError extends Error {
   }
 }
 
-const pgp: IMain = pgPromise();
+export const pgp: IMain = pgPromise();
 
 const dbConf: IConnectionParameters = {
   host: env.PG_HOST,

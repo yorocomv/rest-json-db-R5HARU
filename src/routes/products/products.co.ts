@@ -21,11 +21,13 @@ import {
 } from './products.mo';
 import {
   registerOneNewRevisionProduct,
+  registerOneProductsOrder,
   registerOneQuantityVariantProduct,
   registerOneRegularProduct,
   registerOneSetProduct,
 } from './products.mo.inserts';
 import { updateOneRegularProduct, updateOneSetProduct } from './products.mo.updates';
+import { ProductsOrder } from './products.order.types';
 
 export const registerOneRegular = async (
   req: Request<object, object, PostReqNewProduct>,
@@ -220,6 +222,38 @@ export const findAllBasic = async (
   } catch (err: unknown) {
     console.error(err);
     res.status(500);
+    next(err);
+  }
+};
+
+export const registerOneOrder = async (
+  req: Request<object, object, ProductsOrder>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { registeredAt, firstSkuName, insertedCount } = await registerOneProductsOrder(req.body);
+    if (insertedCount > 0) {
+      res.status(201).json({
+        isSuccess: true,
+        message: `${registeredAt}: ${firstSkuName} ${
+          insertedCount === 1
+            ? 'の注文を登録しました'
+            : `他、計${new Intl.NumberFormat('ja-JP-u-nu-fullwide').format(insertedCount)}の注文を登録しました`
+        }`,
+      });
+    } else {
+      res.status(500).json({
+        isSuccess: true,
+        message: `💥👻💥${registeredAt}: 注文の登録に失敗しました`,
+      });
+    }
+  } catch (err: unknown) {
+    console.error(err);
+    res.status(500).json({
+      isSuccess: false,
+      message: `💥⁉️💥${new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Tokyo' })}: 注文の登録に失敗しました`,
+    });
     next(err);
   }
 };

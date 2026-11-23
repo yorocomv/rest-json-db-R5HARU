@@ -15,6 +15,7 @@ import {
 
 import findAll, { findAllPackagingTypeFlags } from './options/options.co';
 import allImages from './images/images.co';
+import productsOrderSchema from './products.order.schemas';
 
 const router = Router();
 
@@ -78,6 +79,13 @@ router
   .get(
     validateRequest({ params: paramsWithProductIdSchema }) as RequestHandler,
     controllers.findAllComponentsAbout as unknown as RequestHandler
+  );
+
+router
+  .route('/order')
+  .post(
+    validateRequest({ body: productsOrderSchema }) as RequestHandler,
+    controllers.registerOneOrder as RequestHandler
   );
 
 // パッケージタイプや発注先などの各セレクト・オプションを一括返却
